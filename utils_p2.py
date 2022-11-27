@@ -1,7 +1,6 @@
 from tkinter import *  
 from math import *
 import numpy as np
-# import pandas as pd
 
 class MatrixHelpers():
     """
@@ -146,7 +145,6 @@ class Shape(MatrixHelpers):
         self.create_canvas(width, height)
         self.draw_shape(edges, facesList)
         self.bind_mouse_buttons(edges, facesList)
-        # self.continually_rotate()
         self.epsilon = lambda d: d * 0.01
 
     def init_data(self, A):
@@ -160,7 +158,7 @@ class Shape(MatrixHelpers):
         method for creating the canvas
         """
         self.canvas = Canvas(self.root, width=width, height=height, background='white')
-        self.canvas.pack(fill=BOTH, expand=YES)
+        self.canvas.pack()
 
     def compute_colors(self, start, end, limit, factor):
         """
@@ -237,14 +235,6 @@ class Shape(MatrixHelpers):
 
             self.canvas.create_oval(self.translate_point(scale*self.shape[0][edges[i][1]], scale*self.shape[1][edges[i][1]], w, h), 
             self.translate_point(scale*self.shape[0][edges[i][1]], scale*self.shape[1][edges[i][1]], w, h), outline='blue', width=10)
-
-
-    # def continually_rotate(self):
-    #     self.shape = self.rotate_along_x(0.01, self.shape)
-    #     self.shape = self.rotate_along_y(0.01, self.shape)
-    #     self.shape = self.rotate_along_z(0.01, self.shape)
-    #     self.draw_shape()
-    #     self.root.after(15, self.continually_rotate)
 
     def bind_mouse_buttons(self, edges, facesList):
         """
