@@ -35,7 +35,7 @@ for i in range(len(arrFaces)):
     
 
 
-print(gggg)
+# print(gggg)
 
 """Drawing the shape"""
 
@@ -69,10 +69,10 @@ class Shape(MatrixHelpers):
 
     previous_x = 0
     previous_y = 0
-    def __init__(self, root) -> None:
+    def __init__(self, root, width, height) -> None:
         self.root = root
         self.init_data()
-        self.create_canvas()
+        self.create_canvas(width, height)
         self.draw_shape()
         self.bind_mouse_buttons()
         # self.continually_rotate()
@@ -81,9 +81,14 @@ class Shape(MatrixHelpers):
     def init_data(self):
         self.shape = self.transpose_matrix(A)
 
-    def create_canvas(self):
-        self.canvas = Canvas(self.root, width = 800, height = 800, background='white')
+    def create_canvas(self, width, height):
+        """
+        method for creating the canvas
+        """
+        # self.canvas = Canvas(self.root, width = 800, height = 800, background='white')
+        self.canvas = Canvas(self.root, width=width, height=height, background='white')
         self.canvas.pack(fill=BOTH, expand=YES)
+        # self.canvas.pack()
 
     def _compute_colors(self, start, end, limit, factor):
         (r1,g1,b1) = self.canvas.winfo_rgb(start)
@@ -91,20 +96,14 @@ class Shape(MatrixHelpers):
         r_ = int((r1 + (r2-r1) * (limit/factor)))
         g_ = int((g1+(g2-g1) * (limit/factor)))
         b_ = int((b1 + (b2-b1) * (limit/factor)))
-
-        # colors = []
-        # for i in range(limit):
-        #     nr = int(r1 + (r_ratio * i))
-        #     ng = int(g1 + (g_ratio * i))
-        #     nb = int(b1 + (b_ratio * i))
         color = "#%4.4x%4.4x%4.4x" % (r_,g_,b_)
-            # colors.append(color)
         return color
 
     def draw_shape(self):
         w = self.canvas.winfo_width()/2
         h = self.canvas.winfo_height()/2
         self.canvas.delete(ALL)
+        scale = h/2
                 
         for i in range(len(gggg)):
             
@@ -141,15 +140,15 @@ class Shape(MatrixHelpers):
             # self.canvas.create_polygon(self.translate_point(100*self.shape[0][gggg[i][0]], 100*self.shape[1][gggg[i][0]], w, h), 
             # self.translate_point(100*self.shape[0][gggg[i][1]], 100*self.shape[1][gggg[i][1]], w, h), 
             # self.translate_point(100*self.shape[0][gggg[i][2]], 100*self.shape[1][gggg[i][2]], w, h), fill=clr)
-            self.canvas.create_polygon(self.translate_point(100*x_1, 100*y_1, w, h), 
-            self.translate_point(100*x_2, 100*y_2, w, h), 
-            self.translate_point(100*x_3, 100*y_3, w, h), fill=clr)
+            self.canvas.create_polygon(self.translate_point(scale*x_1, scale*y_1, w, h), 
+            self.translate_point(scale*x_2, scale*y_2, w, h), 
+            self.translate_point(scale*x_3, scale*y_3, w, h), fill=clr)
 
-            self.canvas.create_oval(self.translate_point(100*self.shape[0][edges[i][0]], 100*self.shape[1][edges[i][0]], w, h), 
-            self.translate_point(100*self.shape[0][edges[i][0]], 100*self.shape[1][edges[i][0]], w, h), outline='blue', width=10)
+            self.canvas.create_oval(self.translate_point(scale*self.shape[0][edges[i][0]], scale*self.shape[1][edges[i][0]], w, h), 
+            self.translate_point(scale*self.shape[0][edges[i][0]], scale*self.shape[1][edges[i][0]], w, h), outline='blue', width=10)
 
-            self.canvas.create_oval(self.translate_point(100*self.shape[0][edges[i][1]], 100*self.shape[1][edges[i][1]], w, h), 
-            self.translate_point(100*self.shape[0][edges[i][1]], 100*self.shape[1][edges[i][1]], w, h), outline='blue', width=10)
+            self.canvas.create_oval(self.translate_point(scale*self.shape[0][edges[i][1]], scale*self.shape[1][edges[i][1]], w, h), 
+            self.translate_point(scale*self.shape[0][edges[i][1]], scale*self.shape[1][edges[i][1]], w, h), outline='blue', width=10)
 
 
     def continually_rotate(self):
@@ -177,7 +176,10 @@ class Shape(MatrixHelpers):
 
 def main():
   root = Tk()
-  Shape(root)
+  height = root.winfo_screenheight()
+  width = root.winfo_screenwidth()
+  Shape(root, width, height)
+  root.title("Neocis Software Assessment")
   root.mainloop()
 
 
