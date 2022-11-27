@@ -3,38 +3,6 @@ from math import *
 import numpy as np
 import pandas as pd
 
-# """Extracting data from the object.txt file"""
-
-# df = pd.read_csv("object.txt", sep = " ", header=None)
-# data = df.to_numpy()
-# verticesDict = {}
-# edges = []
-
-# verticesNum, facesNum = data[0][0].split(',')
-
-# A = np.empty([int(verticesNum), 3])
-# gggg = []
-# arrVertices = data[1:int(verticesNum)+1, :]
-# for i in range(int(verticesNum)):
-#     id, x, y, z = arrVertices[i][0].split(',')
-    
-#     verticesDict[int(id)-1] = (float(x), float(y), float(z))
-#     A[i] = (float(x), float(y), float(z))
-
-# arrFaces = data[-int(facesNum):]
-# for i in range(len(arrFaces)):
-
-#     v1, v2, v3 = arrFaces[i][0].split(',')
-#     gggg.append([int(v1)-1, int(v2)-1, int(v3)-1])
-#     if (int(v1)-1, int(v2)-1) not in edges:
-#         edges.append((int(v1)-1, int(v2)-1))
-#     if (int(v1)-1, int(v3)-1) not in edges:
-#         edges.append((int(v1)-1, int(v3)-1))
-#     if (int(v2)-1, int(v3)-1) not in edges:
-#         edges.append((int(v2)-1, int(v3)-1))
-
-# print(edges)
-
 class MatrixHelpers():
 
     """
@@ -110,34 +78,30 @@ class MatrixHelpers():
                                     [0, 0, 1]], shape)
 
 class ExtractData():
-    # def __init__(self, data) -> None:
-    #     # self.data = data
-    #     self.A, self.edges, self.facesList = self.extract(data)
-
-    def extract(self, data):
+   def extract(data):
         verticesNum, facesNum = data[0][0].split(',')
-        self.edges = []
-        self.facesList = []
-        self.A = np.empty([int(verticesNum), 3])
-        self.vertices = data[1:int(verticesNum)+1, :]
-        self.faces = data[-int(facesNum):]
+        edges = []
+        facesList = []
+        A = np.empty([int(verticesNum), 3])
+        vertices = data[1:int(verticesNum)+1, :]
+        faces = data[-int(facesNum):]
 
         for i in range(int(verticesNum)):
-            id, x, y, z = self.vertices[i][0].split(',')
-            self.A[i] = (float(x), float(y), float(z))
+            id, x, y, z = vertices[i][0].split(',')
+            A[i] = (float(x), float(y), float(z))
 
-        for i in range(len(self.faces)):
+        for i in range(len(faces)):
 
-            v1, v2, v3 = self.faces[i][0].split(',')
-            self.facesList.append([int(v1)-1, int(v2)-1, int(v3)-1])
-            if (int(v1)-1, int(v2)-1) not in self.edges:
-                self.edges.append((int(v1)-1, int(v2)-1))
-            if (int(v1)-1, int(v3)-1) not in self.edges:
-                self.edges.append((int(v1)-1, int(v3)-1))
-            if (int(v2)-1, int(v3)-1) not in self.edges:
-                self.edges.append((int(v2)-1, int(v3)-1))
+            v1, v2, v3 = faces[i][0].split(',')
+            facesList.append([int(v1)-1, int(v2)-1, int(v3)-1])
+            if (int(v1)-1, int(v2)-1) not in edges:
+                edges.append((int(v1)-1, int(v2)-1))
+            if (int(v1)-1, int(v3)-1) not in edges:
+                edges.append((int(v1)-1, int(v3)-1))
+            if (int(v2)-1, int(v3)-1) not in edges:
+                edges.append((int(v2)-1, int(v3)-1))
         
-        return self.A, self.edges, self.facesList
+        return A, edges
 
 
 class Shape(MatrixHelpers):
@@ -225,16 +189,12 @@ def main():
     height = root.winfo_screenheight()
     width = root.winfo_screenwidth()
     fileName = "object.txt"
-    
-
-
     df = pd.read_csv(fileName, sep = " ", header=None)
     data = df.to_numpy()
-    A, edges, facesList = ExtractData.extract(data)
-    print(A)
-    # Shape(root, width, height, A, edges)
-    # root.title("Neocis Software Assessment")
-    # root.mainloop()
+    A, edges = ExtractData.extract(data)
+    Shape(root, width, height, A, edges)
+    root.title("Neocis Software Assessment")
+    root.mainloop()
 
 
 if __name__ == '__main__':
