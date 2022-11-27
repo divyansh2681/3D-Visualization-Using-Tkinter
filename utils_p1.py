@@ -96,7 +96,18 @@ class ExtractData():
     """
     def extract(data):
         """
-        brief:
+        brief: manipulating the input data (numpy here) for extracting the vertices, edges and faces
+        --------------------------
+        returns - A: matrixc containing all the vertices in the format shown below)
+                    [x1 x2 x3 x4 x5 x6
+                    y1 y2 y3 y4 y5 y6
+                    z1 z2 z3 z4 z5 z6]
+                  edges: list containing all the edges of the shape in the format shown below
+                    [(v1, v2), (v1, v3), .....]
+                    v is the vertex number, so this list has tuples containing vertices for an edge
+                  facesList: list containing all the edges of the shape in the format shown below
+                    [(v1, v2, v3), (v1, v3, v5), .....]
+                    v is the vertex number, so this list has tuples containing vertices for a face
         """
         verticesNum, facesNum = data[0][0].split(',')
         edges = []
@@ -129,6 +140,9 @@ class Shape(MatrixHelpers):
     previous_x = 0
     previous_y = 0
     def __init__(self, root, width, height, A, edges) -> None:
+        """
+        method for calling all the functions required to draw the shape
+        """
         self.root = root
         self.init_data(A)
         self.create_canvas(width, height)
@@ -140,12 +154,24 @@ class Shape(MatrixHelpers):
     def init_data(self, A):
         """
         method for initializing the data (A matrix here)
+        --------------------------
+        Parameters
+        --------------------------
+        A: matrix containing the coordinates for the vertices in the format shown below
+        [x1 x2 x3 x4 x5 x6
+         y1 y2 y3 y4 y5 y6
+         z1 z2 z3 z4 z5 z6]
         """
         self.shape = self.transpose_matrix(A)
 
     def create_canvas(self, width, height):
         """
         method for creating the canvas
+        --------------------------
+        Parameters
+        --------------------------
+        width: width of the canvas
+        height: height of the canvas
         """
         self.canvas = Canvas(self.root, width=width, height=height, background='white')
         self.canvas.pack(fill=BOTH, expand=YES)
@@ -153,6 +179,12 @@ class Shape(MatrixHelpers):
     def draw_shape(self, edges):
         """
         method for drawing the shape using create_lines and drawing vertices using create_oval
+        --------------------------
+        Parameters
+        --------------------------
+        edges: list containing all the edges of the shape in the format shown below
+        [(v1, v2), (v1, v3), .....]
+        v is the vertex number, so this list has tuples containing vertices for an edge
         """
         w = self.canvas.winfo_width()/2
         h = self.canvas.winfo_height()/2
@@ -180,6 +212,12 @@ class Shape(MatrixHelpers):
     def bind_mouse_buttons(self, edges):
         """
         method for binding mouse events to mouse event functions (defined below)
+        --------------------------
+        Parameters
+        --------------------------
+        edges: list containing all the edges of the shape in the format shown below
+        [(v1, v2), (v1, v3), .....]
+        v is the vertex number, so this list has tuples containing vertices for an edge
         """
         self.canvas.bind("<Button-1>", self.mouseClick)
         self.canvas.bind("<B1-Motion>", lambda event, arg = edges: self.mouseMotion(event, arg))
@@ -187,6 +225,10 @@ class Shape(MatrixHelpers):
     def mouseClick(self, event):
         """
         mouse event function for getting the coordinates of the current event (mouse click here)
+        --------------------------
+        Parameters
+        --------------------------
+        event: any event, mouse click here
         """
         self.previous_x = event.x
         self.previous_y = event.y
@@ -195,6 +237,13 @@ class Shape(MatrixHelpers):
     def mouseMotion(self, event, edges):
         """
         mouse event function for creating a rotated matrix and the new shape according to the rotated matrix
+        --------------------------
+        Parameters
+        --------------------------
+        event: any event, mouse motion here
+        edges: list containing all the edges of the shape in the format shown below
+        [(v1, v2), (v1, v3), .....]
+        v is the vertex number, so this list has tuples containing vertices for an edge
         """
         dy = self.previous_y - event.y 
         dx = self.previous_x - event.x 
