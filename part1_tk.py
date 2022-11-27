@@ -3,37 +3,37 @@ from math import *
 import numpy as np
 import pandas as pd
 
-"""Extracting data from the object.txt file"""
+# """Extracting data from the object.txt file"""
 
-df = pd.read_csv("object.txt", sep = " ", header=None)
-data = df.to_numpy()
-verticesDict = {}
-edges = []
+# df = pd.read_csv("object.txt", sep = " ", header=None)
+# data = df.to_numpy()
+# verticesDict = {}
+# edges = []
 
-verticesNum, facesNum = data[0][0].split(',')
+# verticesNum, facesNum = data[0][0].split(',')
 
-A = np.empty([int(verticesNum), 3])
-gggg = []
-arrVertices = data[1:int(verticesNum)+1, :]
-for i in range(int(verticesNum)):
-    id, x, y, z = arrVertices[i][0].split(',')
+# A = np.empty([int(verticesNum), 3])
+# gggg = []
+# arrVertices = data[1:int(verticesNum)+1, :]
+# for i in range(int(verticesNum)):
+#     id, x, y, z = arrVertices[i][0].split(',')
     
-    verticesDict[int(id)-1] = (float(x), float(y), float(z))
-    A[i] = (float(x), float(y), float(z))
+#     verticesDict[int(id)-1] = (float(x), float(y), float(z))
+#     A[i] = (float(x), float(y), float(z))
 
-arrFaces = data[-int(facesNum):]
-for i in range(len(arrFaces)):
+# arrFaces = data[-int(facesNum):]
+# for i in range(len(arrFaces)):
 
-    v1, v2, v3 = arrFaces[i][0].split(',')
-    gggg.append([int(v1)-1, int(v2)-1, int(v3)-1])
-    if (int(v1)-1, int(v2)-1) not in edges:
-        edges.append((int(v1)-1, int(v2)-1))
-    if (int(v1)-1, int(v3)-1) not in edges:
-        edges.append((int(v1)-1, int(v3)-1))
-    if (int(v2)-1, int(v3)-1) not in edges:
-        edges.append((int(v2)-1, int(v3)-1))
+#     v1, v2, v3 = arrFaces[i][0].split(',')
+#     gggg.append([int(v1)-1, int(v2)-1, int(v3)-1])
+#     if (int(v1)-1, int(v2)-1) not in edges:
+#         edges.append((int(v1)-1, int(v2)-1))
+#     if (int(v1)-1, int(v3)-1) not in edges:
+#         edges.append((int(v1)-1, int(v3)-1))
+#     if (int(v2)-1, int(v3)-1) not in edges:
+#         edges.append((int(v2)-1, int(v3)-1))
 
-print(edges)
+# print(edges)
 
 class MatrixHelpers():
 
@@ -109,6 +109,36 @@ class MatrixHelpers():
                                     [-sin(z), cos(z), 0], 
                                     [0, 0, 1]], shape)
 
+class ExtractData():
+    # def __init__(self, data) -> None:
+    #     # self.data = data
+    #     self.A, self.edges, self.facesList = self.extract(data)
+
+    def extract(self, data):
+        verticesNum, facesNum = data[0][0].split(',')
+        self.edges = []
+        self.facesList = []
+        self.A = np.empty([int(verticesNum), 3])
+        self.vertices = data[1:int(verticesNum)+1, :]
+        self.faces = data[-int(facesNum):]
+
+        for i in range(int(verticesNum)):
+            id, x, y, z = self.vertices[i][0].split(',')
+            self.A[i] = (float(x), float(y), float(z))
+
+        for i in range(len(self.faces)):
+
+            v1, v2, v3 = self.faces[i][0].split(',')
+            self.facesList.append([int(v1)-1, int(v2)-1, int(v3)-1])
+            if (int(v1)-1, int(v2)-1) not in self.edges:
+                self.edges.append((int(v1)-1, int(v2)-1))
+            if (int(v1)-1, int(v3)-1) not in self.edges:
+                self.edges.append((int(v1)-1, int(v3)-1))
+            if (int(v2)-1, int(v3)-1) not in self.edges:
+                self.edges.append((int(v2)-1, int(v3)-1))
+        
+        return self.A, self.edges, self.facesList
+
 
 class Shape(MatrixHelpers):
 
@@ -118,16 +148,16 @@ class Shape(MatrixHelpers):
 
     previous_x = 0
     previous_y = 0
-    def __init__(self, root, width, height) -> None:
+    def __init__(self, root, width, height, A, edges) -> None:
         self.root = root
-        self.init_data()
+        self.init_data(A)
         self.create_canvas(width, height)
-        self.draw_shape()
-        self.bind_mouse_buttons()
+        self.draw_shape(edges)
+        self.bind_mouse_buttons(edges)
         # self.continually_rotate()
         self.epsilon = lambda d: d * 0.01
 
-    def init_data(self):
+    def init_data(self, A):
         """
         method for initializing the data (A matrix here)
         """
@@ -137,12 +167,10 @@ class Shape(MatrixHelpers):
         """
         method for creating the canvas
         """
-        # self.canvas = Canvas(self.root, width = 800, height = 800, background='white')
         self.canvas = Canvas(self.root, width=width, height=height, background='white')
         self.canvas.pack(fill=BOTH, expand=YES)
-        # self.canvas.pack()
 
-    def draw_shape(self):
+    def draw_shape(self, edges):
         """
         method for drawing the shape using create_lines 
         """
@@ -151,7 +179,6 @@ class Shape(MatrixHelpers):
         self.canvas.delete(ALL)
 
         scale = h/2
-        # scale_h = h/5
         for i in range(len(edges)):
             
             self.canvas.create_line(self.translate_point(scale*self.shape[0][edges[i][0]], scale*self.shape[1][edges[i][0]], w, h), 
@@ -163,40 +190,51 @@ class Shape(MatrixHelpers):
             self.canvas.create_oval(self.translate_point(scale*self.shape[0][edges[i][1]], scale*self.shape[1][edges[i][1]], w, h), 
             self.translate_point(scale*self.shape[0][edges[i][1]], scale*self.shape[1][edges[i][1]], w, h), outline='blue', width=10)
 
-    def continually_rotate(self):
-        self.shape = self.rotate_along_x(0.01, self.shape)
-        self.shape = self.rotate_along_y(0.01, self.shape)
-        self.shape = self.rotate_along_z(0.01, self.shape)
-        self.draw_shape()
-        self.root.after(15, self.continually_rotate)
+    # def continually_rotate(self):
+    #     self.shape = self.rotate_along_x(0.01, self.shape)
+    #     self.shape = self.rotate_along_y(0.01, self.shape)
+    #     self.shape = self.rotate_along_z(0.01, self.shape)
+    #     self.draw_shape()
+    #     self.root.after(15, self.continually_rotate)
 
-    def bind_mouse_buttons(self):
+    # def bind_mouse_buttons(self):
+    #     self.canvas.bind("<Button-1>", self.mouseClick)
+    #     self.canvas.bind("<B1-Motion>", self.mouseMotion)
+
+    def bind_mouse_buttons(self, edges):
         self.canvas.bind("<Button-1>", self.mouseClick)
-        self.canvas.bind("<B1-Motion>", self.mouseMotion)
+        self.canvas.bind("<B1-Motion>", lambda event, arg = edges: self.mouseMotion(event, arg))
 
     def mouseClick(self, event):
         self.previous_x = event.x
         self.previous_y = event.y
 
 
-    def mouseMotion(self, event):
+    def mouseMotion(self, event, edges):
         dy = self.previous_y - event.y 
         dx = self.previous_x - event.x 
         self.shape = self.rotate_along_x(self.epsilon(-dx), self.shape)
         self.shape = self.rotate_along_y(self.epsilon(dy), self.shape)
-        self.draw_shape()
+        self.draw_shape(edges)
         self.mouseClick(event)
-        # print(self.shape)
+
 
 def main():
-  root = Tk()
-  height = root.winfo_screenheight()
- 
-# getting screen's width in pixels
-  width = root.winfo_screenwidth()
-  Shape(root, width, height)
-  root.title("Neocis Software Assessment")
-  root.mainloop()
+
+    root = Tk()
+    height = root.winfo_screenheight()
+    width = root.winfo_screenwidth()
+    fileName = "object.txt"
+    
+
+
+    df = pd.read_csv(fileName, sep = " ", header=None)
+    data = df.to_numpy()
+    A, edges, facesList = ExtractData.extract(data)
+    print(A)
+    # Shape(root, width, height, A, edges)
+    # root.title("Neocis Software Assessment")
+    # root.mainloop()
 
 
 if __name__ == '__main__':
